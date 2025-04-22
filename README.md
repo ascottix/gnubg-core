@@ -38,6 +38,7 @@ You can use this module from JavaScript as follows:
 
 ```js
 import { initGnubgCore } from './gnubg-core.js';
+// Or use the CDN, e.g. ... from 'https://cdn.jsdelivr.net/gh/ascottix/gnubg-core@v1.0.2/dist/gnubg-core.js';
 
 const gnuBgCore = await initGnubgCore();
 const evalDepth = 1; // Number of plies to search, starts from 0, usually you don't need more than 2 or 3

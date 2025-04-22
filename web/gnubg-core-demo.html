@@ -111,7 +111,8 @@
                 markdown.push(`| ${action} | ${equity(data.equity[index])} |`);
             });
             markdown.push();
-            markdown.push('Best cube action: ' + actions[best].toLocaleLowerCase() + (best == 0 ? ', take' : ''));
+            markdown.push('Best cube action: ' + actions[best].toLocaleLowerCase() +
+                (best == 0 ? (data.equity[1] < data.equity[2] ? ', take' : ', pass') : ''));
         }
 
         function renderPlayAction(markdown, res) {

@@ -12,4 +12,5 @@ gnubg-core
 .DS_Store
 
 # Misc
+build.sh
 setenv.sh
