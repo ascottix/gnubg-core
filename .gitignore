@@ -1,0 +1,15 @@
+# VS Code config
+.vscode/
+
+# Build artifacts
+obj/
+obj_emcc/
+
+# Standard build output
+gnubg-core
+
+# Mac OS metadata
+.DS_Store
+
+# Misc
+setenv.sh
