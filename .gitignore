@@ -14,7 +14,3 @@ gnubg-core-module.wasm
 
 # Mac OS metadata
 .DS_Store
-
-# Misc
-build.sh
-setenv.sh
