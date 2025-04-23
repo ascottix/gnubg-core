@@ -4,9 +4,13 @@
 # Build artifacts
 obj/
 obj_emcc/
+dist/
 
 # Standard build output
 gnubg-core
+gnubg-core-module.data
+gnubg-core-module.js
+gnubg-core-module.wasm
 
 # Mac OS metadata
 .DS_Store
