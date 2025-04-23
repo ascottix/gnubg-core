@@ -47,10 +47,12 @@ int main()
     // testBestAction("XGID=aa--BBBB----dE---d-e----B-:0:0:1:D:0:0:0:0:10:=== pass (opponent has doubled)");
     // testBestAction("XGID=aBaB--C-A---dE--ac-e----B-:0:0:1:00:0:0:0:0:10:=== no double, take");
     // testBestAction("XGID=aB-B-aC-A---dE--ac-e----B-:0:0:1:00:0:0:0:0:10:=== double, take");
-    testBestAction("XGID=aa--BBBB----dE---d-e----B-:0:0:1:00:0:0:0:0:10:=== double, pass");
+    // testBestAction("XGID=aa--BBBB----dE---d-e----B-:0:0:1:00:0:0:0:0:10:=== double, pass");
     // testBestAction("XGID=aBaB--C-A---dE--ac-e----B-:0:0:1:00:0:0:0:0:10:=== roll");
     // testBestAction("XGID=aBaB--C-A---dE--ac-e----B-:0:0:1:42:0:0:0:0:10:=== play");
     // testBestAction("XGID=-b----E-C---eE---c-e----B-:0:0:-1:52:0:0:0:5:10:24/22, 13/8");
+    testBestAction("XGID=-b----E-C---eE---cad----B-:0:0:1:65:0:0:0:0:10:=== play 24/18* 18/13");
+
 
     shutdown();
 

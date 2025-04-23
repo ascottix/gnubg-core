@@ -89,6 +89,10 @@ const char *hint(const char *xgid, int nPlies)
         return sbFinalize(&jb);
     }
 
+    matchstate ms; // Required for FormatMove
+
+    parseXgid(&ms, xgid);
+
     switch (pai.action) {
     case ActionRoll:
         appendCubeDecisionData(&jb, "roll", &pai.data.cube);
@@ -119,7 +123,9 @@ const char *hint(const char *xgid, int nPlies)
             sbAppend(&jb, "{");
             PlayerMove *pm = pai.data.move.list + i;
             char szMove[FORMATEDMOVESIZE];
-            FormatMove(szMove, ms.anBoard, pm->anMove);
+            FormatMovePlain(szMove, ms.anBoard, pm->anMove);
+            int len = strlen(szMove);
+            if(len > 0 && szMove[len-1] == ' ') szMove[len-1] = 0;
             sbAppendf(&jb, "\"move\": \"%s\",", szMove);
             sbAppendf(&jb, "\"equity\": [%.4f, %.4f],", pm->rEquity, pm->rCubelessEquity);
             sbAppendf(&jb, "\"eval\": [%.4f, %.4f, %.4f, %.4f, %.4f]}",
