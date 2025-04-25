@@ -70,7 +70,7 @@ The module exposes the following functions:
 
 The `hint()` function returns a plain JavaScript object with the following structure:
 
-```json
+```js
 {
   "action": "...",     // The suggested action: "play", "double", "take", "drop", or "roll"
   "data": { ... }      // Evaluation data that supports the decision (structure depends on the action)
@@ -92,7 +92,7 @@ These include:
 
 In these cases, data has this structure:
 
-```json
+```js
 {
   "cd": <int>,          // Cube decision enum (see below)
   "equity": [           // Equity values for different cube outcomes
@@ -152,7 +152,7 @@ When the action is `"play"`, the `data` field contains an **array of moves**, or
 
 Each element in the array has the following structure:
 
-```json
+```js
 {
   "move": "8/4 6/4",           // Move in standard notation
   "equity": [                  // Equity values
