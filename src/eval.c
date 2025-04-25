@@ -20,18 +20,19 @@
 #include "bearoffgammon.h"
 #include "config.h"
 #include "isaac.h"
+#include "lib/cache.h"
+#include "lib/simd.h"
 #include "matchequity.h"
 #include "matchid.h"
 #include "md5.h"
+#include "multithread.h"
 #include "positionid.h"
+#include "simd.h"
+#include "util.h"
 #include <errno.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>
-#include "lib/simd.h"
-#include "multithread.h"
-#include "simd.h"
-#include "util.h"
 
 typedef void (*classstatusfunc)(char *szOutput);
 typedef int (*cfunc)(const void *, const void *);
@@ -5633,6 +5634,11 @@ finished:
                 break;
             }
     }
+
+    // It seems sometimes the list comes out not fully sorted
+    qsort(pml->amMoves, pml->cMoves, sizeof(move), (cfunc)CompareMoves);
+    pml->iMoveBest = 0;
+    pml->rBestScore = pml->amMoves[0].rScore;
 
     return 0;
 }

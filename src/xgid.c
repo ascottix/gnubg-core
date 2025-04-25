@@ -90,8 +90,8 @@ int parseXgid(matchstate *pms, const char *xgid)
         return -4; // Unsupported
     }
 
-    pms->anScore[0] = atoi(v[4]);
-    pms->anScore[1] = atoi(v[5]);
+    pms->anScore[0] = atoi(v[5]);
+    pms->anScore[1] = atoi(v[4]);
 
     pms->nMatchTo = atoi(v[7]);
 
@@ -154,7 +154,7 @@ int evaluatePosition(const matchstate *pms, int nPlies)
     evalcontext ec;
 
     ec.fCubeful = pms->fCubeUse;
-    ec.nPlies = (unsigned) nPlies; // 0 to 3 are sensible values
+    ec.nPlies = (unsigned)nPlies; // 0 to 3 are sensible values
     ec.fUsePrune = FALSE;
     ec.fDeterministic = TRUE;
     ec.rNoise = 0.0f; // No noise
@@ -218,7 +218,7 @@ int findBestMoves(movelist *pml, const matchstate *pms, int nPlies)
     evalcontext ec;
 
     ec.fCubeful = pms->fCubeUse;
-    ec.nPlies = (unsigned) nPlies;
+    ec.nPlies = (unsigned)nPlies;
     ec.fUsePrune = FALSE;
     ec.fDeterministic = TRUE;
     ec.rNoise = 0.0f; // No noise
@@ -239,52 +239,52 @@ int findCubeDecision(cubedecision *pcd, float arEquity[NUM_CUBEFUL_OUTPUTS], con
     rolloutstat aarsStatistics[2][2];
     cubeinfo ci;
     evalsetup esSupremo = {
-        EVAL_EVAL,                  // evaltype
+        EVAL_EVAL,                       // evaltype
         {TRUE, nPlies, TRUE, TRUE, 0.0}, // evalcontext
-        { // rolloutcontext
-            {
-                {FALSE, 2, TRUE, TRUE, 0.0}, // player 0 cube decision
-                {FALSE, 2, TRUE, TRUE, 0.0}  // player 1 cube decision
-            },
-            {
-                {FALSE, 0, TRUE, TRUE, 0.0}, // player 0 chequerplay
-                {FALSE, 0, TRUE, TRUE, 0.0}  // player 1 chequerplay
-            },
-            {
-                {FALSE, 2, TRUE, TRUE, 0.0}, // p 0 late cube decision
-                {FALSE, 2, TRUE, TRUE, 0.0}  // p 1 late cube decision
-            },
-            {
-                {FALSE, 0, TRUE, TRUE, 0.0}, // p 0 late chequerplay
-                {FALSE, 0, TRUE, TRUE, 0.0}  // p 1 late chequerplay
-            },
-            {FALSE, 2, TRUE, TRUE, 0.0}, // truncate cube decision
-            {FALSE, 2, TRUE, TRUE, 0.0}, // truncate chequerplay
-            {MOVEFILTER_NORMAL, MOVEFILTER_NORMAL},
-            {MOVEFILTER_NORMAL, MOVEFILTER_NORMAL},
-            FALSE,        // cubeful
-            TRUE,         // variance reduction
-            FALSE,        // initial position
-            TRUE,         // rotate
-            TRUE,         // truncate at BEAROFF2 for cubeless rollouts
-            TRUE,         // truncate at BEAROFF2_OS for cubeless rollouts
-            FALSE,        // late evaluations
-            TRUE,         // Truncation enabled
-            FALSE,        // no stop on STD
-            FALSE,        // no stop on JSD
-            FALSE,        // no move stop on JSD
-            10,           // truncation
-            1296,         // number of trials
-            5,            // late evals start here
-            RNG_ISAAC,    // RNG
-            0,            // seed
-            324,          // minimum games
-            0.01f,        // stop when std's are lower than 0.01
-            324,          // minimum games
-            2.33f,        // stop when best has j.s.d. for 99% confidence
-            0,
-            0.0,
-            0}};
+        {                                // rolloutcontext
+         {
+             {FALSE, 2, TRUE, TRUE, 0.0}, // player 0 cube decision
+             {FALSE, 2, TRUE, TRUE, 0.0}  // player 1 cube decision
+         },
+         {
+             {FALSE, 0, TRUE, TRUE, 0.0}, // player 0 chequerplay
+             {FALSE, 0, TRUE, TRUE, 0.0}  // player 1 chequerplay
+         },
+         {
+             {FALSE, 2, TRUE, TRUE, 0.0}, // p 0 late cube decision
+             {FALSE, 2, TRUE, TRUE, 0.0}  // p 1 late cube decision
+         },
+         {
+             {FALSE, 0, TRUE, TRUE, 0.0}, // p 0 late chequerplay
+             {FALSE, 0, TRUE, TRUE, 0.0}  // p 1 late chequerplay
+         },
+         {FALSE, 2, TRUE, TRUE, 0.0}, // truncate cube decision
+         {FALSE, 2, TRUE, TRUE, 0.0}, // truncate chequerplay
+         {MOVEFILTER_NORMAL, MOVEFILTER_NORMAL},
+         {MOVEFILTER_NORMAL, MOVEFILTER_NORMAL},
+         FALSE,     // cubeful
+         TRUE,      // variance reduction
+         FALSE,     // initial position
+         TRUE,      // rotate
+         TRUE,      // truncate at BEAROFF2 for cubeless rollouts
+         TRUE,      // truncate at BEAROFF2_OS for cubeless rollouts
+         FALSE,     // late evaluations
+         TRUE,      // Truncation enabled
+         FALSE,     // no stop on STD
+         FALSE,     // no stop on JSD
+         FALSE,     // no move stop on JSD
+         10,        // truncation
+         1296,      // number of trials
+         5,         // late evals start here
+         RNG_ISAAC, // RNG
+         0,         // seed
+         324,       // minimum games
+         0.01f,     // stop when std's are lower than 0.01
+         324,       // minimum games
+         2.33f,     // stop when best has j.s.d. for 99% confidence
+         0,
+         0.0,
+         0}};
 
     getCubeInfoFromMatchState(&ci, pms);
 
@@ -343,9 +343,7 @@ int findBestAction(PlayerActionInfo *ppai, const char *xgid, int nPlies)
         }
 
         const movelist *pml = &ml;
-        unsigned cMoves = pml->cMoves;
-
-        if(cMoves > MaxPlayerMoves) cMoves = MaxPlayerMoves; // Max moves to output
+        unsigned cMoves = MIN(pml->cMoves, MaxPlayerMoves);
 
         ppai->action = ActionMove;
         ppai->data.move.cMoves = cMoves;
