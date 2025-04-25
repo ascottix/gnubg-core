@@ -125,7 +125,7 @@ const char *hint(const char *xgid, int nPlies)
             PlayerMove *pm = pai.data.move.list + i;
 
             char szMove[FORMATEDMOVESIZE];
-            FormatMovePlain(szMove, ms.anBoard, pm->anMove);
+            FormatMovePlain(szMove, anBoard, pm->anMove);
             int len = strlen(szMove);
             if(len > 0 && szMove[len-1] == ' ') szMove[len-1] = 0;
 
