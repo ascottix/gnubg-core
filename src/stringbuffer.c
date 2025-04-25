@@ -31,7 +31,7 @@ void sbInit(StringBuffer *jb)
     }
 }
 
-static void jsonbEnsureCapacity(StringBuffer *jb, size_t extra)
+static void sbEnsureCapacity(StringBuffer *jb, size_t extra)
 {
     size_t required = jb->len + extra + 1;
     if (required > jb->cap) {
@@ -45,7 +45,7 @@ static void jsonbEnsureCapacity(StringBuffer *jb, size_t extra)
 void sbAppend(StringBuffer *jb, const char *s)
 {
     size_t slen = strlen(s);
-    jsonbEnsureCapacity(jb, slen);
+    sbEnsureCapacity(jb, slen);
     memcpy(jb->buf + jb->len, s, slen + 1); // include \0
     jb->len += slen;
 }
@@ -64,7 +64,7 @@ void sbAppendf(StringBuffer *jb, const char *fmt, ...)
         return;
     }
 
-    jsonbEnsureCapacity(jb, needed);
+    sbEnsureCapacity(jb, needed);
     vsnprintf(jb->buf + jb->len, needed + 1, fmt, args_copy);
     jb->len += needed;
     va_end(args_copy);
