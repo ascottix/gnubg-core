@@ -53,7 +53,11 @@ int main()
     // test("XGID=-b----E-C---eE---c-e----B-:0:0:-1:52:0:0:0:5:10:24/22, 13/8");
     // test("XGID=-b----E-C---eE---cad----B-:0:0:1:65:0:0:0:0:10:=== play 24/18* 18/13");
     // test("XGID=--------abcba------CBABC--:0:0:1:55:0:0:0:0:10");
-    test("XGID=---B-bD-C--AcC--bb-db---B-:0:0:1:22:0:4:0:7:10");
+    // test("XGID=---B-bD-C--AcC--bb-db---B-:0:0:1:22:0:4:0:7:10");
+    // test("XGID=-A--A-eAd---Ed---a-Ca-B-B-:0:0:-1:31:5:6:0:9:6");
+    // test("EcEHHDMQ4cHzAQ:MIEsAWAAKAAE"); test("XGID=-A--A-eAd---Ed---a-Ca-B-B-:0:0:-1:13:5:6:0:9:6");
+    test("EOHB8wERwQccMw:cIksAWAAKAAE");
+    test("XGID=-A--A-eAd---Ed---a-Ca-B-B-:0:0:1:13:5:6:0:9:6");
 
     shutdown();
 

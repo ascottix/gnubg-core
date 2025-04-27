@@ -19,6 +19,15 @@
 #ifndef MATCHID_H
 #define MATCHID_H
 
+#define L_MATCHID 12
+
 extern int LogCube(int n);
+
+extern int MatchFromID(
+    unsigned int anDice[2],
+    int *pfTurn,
+    int *pfResigned,
+    int *pfDoubled, int *pfMove, int *pfCubeOwner, int *pfCrawford, int *pnMatchTo, int anScore[2], int *pnCube,
+    int *pfJacoby, gamestate *pgs, const char *szMatchID);
 
 #endif

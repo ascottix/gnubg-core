@@ -16,9 +16,46 @@
  */
 #include "xgid.h"
 #include "matchequity.h" // For MAXSCORE
+#include "matchid.h"
 #include "movefilters.inc"
 #include "positionid.h"
 #include <string.h>
+
+int parsePositionIdMatchId(matchstate *pms, const char *posAndMatchId)
+{
+    if (strlen(posAndMatchId) != (L_POSITIONID + 1 + L_MATCHID)) {
+        return -6;
+    }
+
+    if (posAndMatchId[L_POSITIONID] != ':') {
+        return -6;
+    }
+
+    char szPosId[L_POSITIONID + 1];
+    memcpy(szPosId, posAndMatchId, L_POSITIONID);
+    szPosId[L_POSITIONID] = 0;
+
+    const char *matchId = posAndMatchId + L_POSITIONID + 1;
+
+    int res = MatchFromID(
+        pms->anDice, &pms->fTurn, &pms->fResigned, &pms->fDoubled, &pms->fMove, &pms->fCubeOwner,
+        &pms->fCrawford, &pms->nMatchTo, pms->anScore, &pms->nCube, &pms->fJacoby, &pms->gs, matchId);
+
+    if (res != 0) {
+        return -7;
+    }
+
+    pms->fCubeUse = !pms->fCrawford;
+    pms->bgv = VARIATION_STANDARD;
+
+    res = PositionFromID(pms->anBoard, szPosId);
+
+    if (!res) {
+        return -8;
+    }
+
+    return 0;
+}
 
 /**
  * Parses an XGID string into a matchstate. Does NOT verify that the XGID is valid.
@@ -29,7 +66,8 @@ int parseXgid(matchstate *pms, const char *xgid)
 
     // Check the prefix
     if (strstr(xgid, "XGID=") != xgid) {
-        return -1;
+        // Not an XGID, try to parse a position/match ID
+        return parsePositionIdMatchId(pms, xgid);
     }
 
     // Get the board
@@ -305,6 +343,44 @@ int findCubeDecision(cubedecision *pcd, float arEquity[NUM_CUBEFUL_OUTPUTS], con
     *pcd = FindCubeDecision(arEquity, aarOutput, &ci);
 
     return 0;
+}
+
+void print_matchstate(const matchstate *ms) {
+    printf("matchstate {\n");
+
+    printf("  anBoard = [\n");
+    for (int i = 0; i < 2; ++i) {
+        printf("    [");
+        for (int j = 0; j < 25; ++j) {
+            printf("%u", ms->anBoard[i][j]);
+            if (j < 24) printf(", ");
+        }
+        printf("]");
+        if (i == 0) printf(",\n");
+        else printf("\n");
+    }
+    printf("  ]\n");
+
+    printf("  anDice = [%u, %u]\n", ms->anDice[0], ms->anDice[1]);
+    printf("  fTurn = %d\n", ms->fTurn);
+    printf("  fResigned = %d\n", ms->fResigned);
+    printf("  fResignationDeclined = %d\n", ms->fResignationDeclined);
+    printf("  fDoubled = %d\n", ms->fDoubled);
+    printf("  cGames = %d\n", ms->cGames);
+    printf("  fMove = %d\n", ms->fMove);
+    printf("  fCubeOwner = %d\n", ms->fCubeOwner);
+    printf("  fCrawford = %d\n", ms->fCrawford);
+    printf("  fPostCrawford = %d\n", ms->fPostCrawford);
+    printf("  nMatchTo = %d\n", ms->nMatchTo);
+    printf("  anScore = [%d, %d]\n", ms->anScore[0], ms->anScore[1]);
+    printf("  nCube = %d\n", ms->nCube);
+    printf("  cBeavers = %u\n", ms->cBeavers);
+    printf("  bgv = %d\n", (int)(intptr_t)ms->bgv);
+    printf("  fCubeUse = %d\n", ms->fCubeUse);
+    printf("  fJacoby = %d\n", ms->fJacoby);
+    printf("  gs = %d\n", (int)(intptr_t)ms->gs);
+
+    printf("}\n");
 }
 
 int findBestAction(PlayerActionInfo *ppai, const char *xgid, int nPlies)

@@ -89,9 +89,9 @@ const char *hint(const char *xgid, int nPlies)
         return sbFinalize(&jb);
     }
 
-    TanBoard anBoard; // Required for FormatMove
+    matchstate matchState; // Required for FormatMove
 
-    PositionFromXG(anBoard, xgid + 5);
+    parseXgid(&matchState, xgid);
 
     switch (pai.action) {
     case ActionRoll:
@@ -125,7 +125,7 @@ const char *hint(const char *xgid, int nPlies)
             PlayerMove *pm = pai.data.move.list + i;
 
             char szMove[FORMATEDMOVESIZE];
-            FormatMovePlain(szMove, anBoard, pm->anMove);
+            FormatMovePlain(szMove, matchState.anBoard, pm->anMove);
             int len = strlen(szMove);
             if(len > 0 && szMove[len-1] == ' ') szMove[len-1] = 0;
 
