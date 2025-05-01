@@ -56,8 +56,9 @@ int main()
     // test("XGID=---B-bD-C--AcC--bb-db---B-:0:0:1:22:0:4:0:7:10");
     // test("XGID=-A--A-eAd---Ed---a-Ca-B-B-:0:0:-1:31:5:6:0:9:6");
     // test("EcEHHDMQ4cHzAQ:MIEsAWAAKAAE"); test("XGID=-A--A-eAd---Ed---a-Ca-B-B-:0:0:-1:13:5:6:0:9:6");
-    test("EOHB8wERwQccMw:cIksAWAAKAAE");
-    test("XGID=-A--A-eAd---Ed---a-Ca-B-B-:0:0:1:13:5:6:0:9:6");
+    // test("EOHB8wERwQccMw:cIksAWAAKAAE");
+    // test("XGID=-A--A-eAd---Ed---a-Ca-B-B-:0:0:1:13:5:6:0:9:6");
+    test("XGID=-a--aBCbCCC-aaaa---c-bbA--:0:0:-1:64:7:7:0:17:10");
 
     shutdown();
 
