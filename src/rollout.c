@@ -35,8 +35,6 @@
 
 #define LogCubeClamped(n) (n < (1 << STAT_MAXCUBE) ? LogCube(n) : (STAT_MAXCUBE - 1))
 
-#if !defined(LOCKING_VERSION)
-
 f_BasicCubefulRollout BasicCubefulRollout = BasicCubefulRolloutNoLocking;
 #define BasicCubefulRollout BasicCubefulRolloutNoLocking
 
@@ -141,17 +139,8 @@ ClosedBoard(int afClosedBoard[2], const TanBoard anBoard)
     }
 }
 
-#else
 
-#define BasicCubefulRollout BasicCubefulRolloutWithLocking
-
-static volatile unsigned int initial_game_count;
-
-#endif
-
-#if !defined(LOCKING_VERSION)
 static void initRolloutstat(rolloutstat *prs);
-#endif
 
 /* called with
  * cube decision                  move rollout
@@ -663,8 +652,6 @@ BasicCubefulRollout(unsigned int aanBoard[][2][25],
 
     return 0;
 }
-
-#if !defined(LOCKING_VERSION)
 
 /* called with a collection of moves or a cube decision to be rolled out.
  * when called with a cube decision, the number of alternatives is always 2
@@ -1690,5 +1677,3 @@ InvertStdDev(float ar[NUM_ROLLOUT_OUTPUTS])
     ar[OUTPUT_WINBACKGAMMON] = ar[OUTPUT_LOSEBACKGAMMON];
     ar[OUTPUT_LOSEBACKGAMMON] = r;
 }
-
-#endif

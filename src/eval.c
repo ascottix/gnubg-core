@@ -192,30 +192,6 @@ enum {
 #define NUM_RACE_INPUTS (HALF_RACE_INPUTS * 2)
 #define NUM_PRUNING_INPUTS (25 * MINPPERPOINT * 2)
 
-#if !defined(LOCKING_VERSION)
-
-f_FindnSaveBestMoves FindnSaveBestMoves = FindnSaveBestMovesNoLocking;
-f_FindBestMove FindBestMove = FindBestMoveNoLocking;
-f_EvaluatePosition EvaluatePosition = EvaluatePositionNoLocking;
-f_ScoreMove ScoreMove = ScoreMoveNoLocking;
-f_GeneralCubeDecisionE GeneralCubeDecisionE = GeneralCubeDecisionENoLocking;
-f_GeneralEvaluationE GeneralEvaluationE = GeneralEvaluationENoLocking;
-
-#define FindnSaveBestMoves FindnSaveBestMovesNoLocking
-#define FindBestMove FindBestMoveNoLocking
-#define EvaluatePosition EvaluatePositionNoLocking
-#define ScoreMove ScoreMoveNoLocking
-#define GeneralCubeDecisionE GeneralCubeDecisionENoLocking
-#define GeneralEvaluationE GeneralEvaluationENoLocking
-#define EvaluatePositionCache EvaluatePositionCacheNoLocking
-#define FindBestMovePlied FindBestMovePliedNoLocking
-#define GeneralEvaluationEPlied GeneralEvaluationEPliedNoLocking
-#define EvaluatePositionCubeful3 EvaluatePositionCubeful3NoLocking
-#define ScoreMoves ScoreMovesNoLocking
-#define ScoreMovesPruned ScoreMovesPrunedNoLocking
-#define FindBestMoveInEval FindBestMoveInEvalNoLocking
-#define GeneralEvaluationEPliedCubeful GeneralEvaluationEPliedCubefulNoLocking
-#define EvaluatePositionCubeful4 EvaluatePositionCubeful4NoLocking
 #define CacheAdd CacheAddNoLocking
 #define CacheLookup CacheLookupNoLocking
 
@@ -248,26 +224,10 @@ int fInterrupt = FALSE;
 int fMatchCancelled = FALSE;
 
 /* variation of backgammon used by gnubg */
-
 bgvariation bgvDefault = VARIATION_STANDARD;
 
 /* the number of chequers for the variations */
-
 int anChequers[NUM_VARIATIONS] = {15, 15, 1, 2, 3};
-
-const char *aszVariations[NUM_VARIATIONS] = {
-    N_("Standard backgammon"),
-    N_("Nackgammon"),
-    N_("1-chequer hypergammon"),
-    N_("2-chequer hypergammon"),
-    N_("3-chequer hypergammon")};
-
-const char *aszVariationCommands[NUM_VARIATIONS] = {
-    "standard",
-    "nackgammon",
-    "1-chequer-hypergammon",
-    "2-chequer-hypergammon",
-    "3-chequer-hypergammon"};
 
 cubeinfo ciCubeless = {1, 0, 0, 0, {0, 0}, FALSE, FALSE, FALSE, {1.0, 1.0, 1.0, 1.0}, VARIATION_STANDARD};
 
@@ -3980,145 +3940,6 @@ FormatEval(char *sz, evalsetup *pes)
     return sz;
 }
 
-#if 0
-static void
-CalcCubefulEquity(positionclass pc, float arOutput[NUM_ROLLOUT_OUTPUTS], int nPlies, int fDT, cubeinfo * pci)
-{
-
-    float rND, rDT, rDP, r;
-    int fCube;
-    cubeinfo ci;
-    float ar[NUM_ROLLOUT_OUTPUTS];
-
-    int fMax = !(nPlies % 2);
-
-    memcpy(&ar[0], &arOutput[0], NUM_OUTPUTS * sizeof(float));
-
-    if (!nPlies) {
-
-        /* leaf node */
-
-        if (pc == CLASS_OVER || (pci->nMatchTo && !fDoCubeful(pci))) {
-
-            /* cubeless */
-
-            rND = Utility(arOutput, pci);
-
-        } else {
-
-            /* cubeful */
-
-            rND = (pci->nMatchTo) ? mwc2eq(Cl2CfMatch(arOutput, pci), pci) : Cl2CfMoney(arOutput, pci);
-
-        }
-
-    } else {
-
-        /* internal node; recurse */
-
-        SetCubeInfo(&ci,
-                    pci->nCube, pci->fCubeOwner,
-                    !pci->fMove, pci->nMatchTo, pci->anScore, pci->fCrawford, pci->fJacoby, pci->fBeavers, pci->bgv);
-
-        CalcCubefulEquity(pc, ar, nPlies - 1, TRUE, &ci);
-
-        rND = ar[OUTPUT_CUBEFUL_EQUITY];
-
-    }
-
-    GetDPEq(&fCube, &rDP, pci);
-
-    if (pci->nMatchTo)
-        rDP = mwc2eq(rDP, pci);
-
-    if (fCube && fDT) {
-
-        /* double, take */
-
-        if (!nPlies) {
-
-            SetCubeInfo(&ci, 2 * pci->nCube, !pci->fMove, pci->fMove,
-                        pci->nMatchTo, pci->anScore, pci->fCrawford, pci->fJacoby, pci->fBeavers, pci->bgv);
-
-            /* leaf node */
-
-            if (pc == CLASS_OVER || (pci->nMatchTo && !fDoCubeful(&ci))) {
-
-                /* cubeless */
-
-                rDT = Utility(arOutput, &ci);
-                if (pci->nMatchTo)
-                    rDT *= 2.0;
-
-            } else {
-
-                /* cubeful */
-
-                rDT = (pci->nMatchTo) ? mwc2eq(Cl2CfMatch(arOutput, &ci), &ci) : 2.0 * Cl2CfMoney(arOutput, &ci);
-
-            }
-
-        } else {
-
-            /* internal node; recurse */
-
-            SetCubeInfo(&ci, 2 * pci->nCube, !pci->fMove, !pci->fMove,
-                        pci->nMatchTo, pci->anScore, pci->fCrawford, pci->fJacoby, pci->fBeavers, pci->bgv);
-
-            CalcCubefulEquity(pc, ar, nPlies - 1, TRUE, &ci);
-
-            rDT = ar[OUTPUT_CUBEFUL_EQUITY];
-            if (!ci.nMatchTo)
-                rDT *= 2.0;
-
-        }
-
-        if (fMax) {
-
-            /* maximize my equity */
-
-            if (rDP > rND && rDT > rND) {
-
-                /* it's a double */
-
-                if (rDT >= rDP)
-                    r = rDP;    /* pass */
-                else
-                    r = rDT;    /* take */
-
-            } else
-                r = rND;        /* no double */
-
-        } else {
-
-            /* minimize my equity */
-
-            rDP = -rDP;
-
-            if (rDP < rND && rDT < rND) {
-
-                /* it's a double */
-
-                if (rDT < rDP)
-                    r = rDP;    /* pass */
-                else
-                    r = rDT;    /* take */
-
-            } else
-                r = rND;        /* no double */
-
-        }
-    } else {
-        r = rND;
-        rDT = 0.0;
-    }
-
-    arOutput[OUTPUT_EQUITY] = UtilityME(arOutput, pci);
-    arOutput[OUTPUT_CUBEFUL_EQUITY] = r;
-
-}
-#endif /* !LOCKING_VERSION */
-
 /*
  * Compare two evalcontexts.
  *
@@ -5035,35 +4856,6 @@ DoubleType(const int fDoubled, const int fMove, const int fTurn)
     return DT_NORMAL;
 }
 
-#else
-
-#define FindnSaveBestMoves FindnSaveBestMovesWithLocking
-#define FindBestMove FindBestMoveWithLocking
-#define EvaluatePosition EvaluatePositionWithLocking
-#define ScoreMove ScoreMoveWithLocking
-#define GeneralCubeDecisionE GeneralCubeDecisionEWithLocking
-#define GeneralEvaluationE GeneralEvaluationEWithLocking
-#define EvaluatePositionCache EvaluatePositionCacheWithLocking
-#define FindBestMovePlied FindBestMovePliedWithLocking
-#define GeneralEvaluationEPlied GeneralEvaluationEPliedWithLocking
-#define EvaluatePositionCubeful3 EvaluatePositionCubeful3WithLocking
-#define ScoreMoves ScoreMovesWithLocking
-#define ScoreMovesPruned ScoreMovesPrunedWithLocking
-#define FindBestMoveInEval FindBestMoveInEvalWithLocking
-#define GeneralEvaluationEPliedCubeful GeneralEvaluationEPliedCubefulWithLocking
-#define EvaluatePositionCubeful4 EvaluatePositionCubeful4WithLocking
-#define CacheAdd CacheAddWithLocking
-#define CacheLookup CacheLookupWithLocking
-
-static int EvaluatePositionCache(NNState *nnStates, const TanBoard anBoard, float arOutput[],
-                                 cubeinfo *const pci, const evalcontext *pecx, int nPlies, positionclass pc);
-
-static int FindBestMovePlied(int anMove[8], int nDice0, int nDice1,
-                             TanBoard anBoard, const cubeinfo *pci,
-                             const evalcontext *pec, int nPlies, movefilter aamf[MAX_FILTER_PLIES][MAX_FILTER_PLIES]);
-
-#endif
-
 static int GeneralEvaluationEPlied(NNState *nnStates, float arOutput[NUM_ROLLOUT_OUTPUTS],
                                    const TanBoard anBoard, cubeinfo *const pci, const evalcontext *pec, int nPlies);
 static int EvaluatePositionCubeful3(NNState *nnStates, const TanBoard anBoard, float arOutput[NUM_OUTPUTS],
@@ -5326,7 +5118,6 @@ extern int
 EvaluatePosition(NNState *nnStates, const TanBoard anBoard, float arOutput[],
                  cubeinfo *const pci, const evalcontext *pec)
 {
-
     positionclass pc = ClassifyPosition(anBoard, pci->bgv);
 
     return EvaluatePositionCache(nnStates, anBoard, arOutput, pci, pec ? pec : &ecBasic, pec ? pec->nPlies : 0, pc);
@@ -5483,7 +5274,6 @@ FindBestMove(int anMove[8], int nDice0, int nDice1,
              TanBoard anBoard, const cubeinfo *pci, evalcontext *pec,
              movefilter aamf[MAX_FILTER_PLIES][MAX_FILTER_PLIES])
 {
-
     return FindBestMovePlied(anMove, nDice0, nDice1, anBoard, pci, pec ? pec : &ecBasic, pec ? pec->nPlies : 0, aamf);
 }
 

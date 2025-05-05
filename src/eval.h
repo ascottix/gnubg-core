@@ -19,16 +19,16 @@
 #ifndef EVAL_H
 #define EVAL_H
 
-#include "dice.h"
 #include "bearoff.h"
-#include "neuralnet.h"
 #include "cache.h"
+#include "dice.h"
+#include "neuralnet.h"
 
-#define EXP_LOCK_FUN(ret, name, ...) \
-	typedef ret (*f_##name)( __VA_ARGS__); \
-	extern f_##name name; \
-	extern ret name##NoLocking( __VA_ARGS__); \
-	extern ret name##WithLocking( __VA_ARGS__)
+#define EXP_LOCK_FUN(ret, name, ...)         \
+    typedef ret (*f_##name)(__VA_ARGS__);    \
+    extern f_##name name;                    \
+    extern ret name##NoLocking(__VA_ARGS__); \
+    extern ret name##WithLocking(__VA_ARGS__)
 
 #define WEIGHTS_VERSION "1.01"
 #define WEIGHTS_VERSION_BINARY 1.01f
@@ -47,7 +47,7 @@
 #define OUTPUT_LOSEGAMMON 3
 #define OUTPUT_LOSEBACKGAMMON 4
 
-#define OUTPUT_EQUITY 5         /* NB: neural nets do not output equity, only rollouts do. */
+#define OUTPUT_EQUITY 5 /* NB: neural nets do not output equity, only rollouts do. */
 #define OUTPUT_CUBEFUL_EQUITY 6
 
 /* Cubeful evalutions */
@@ -71,62 +71,50 @@ typedef enum {
 #define MAX_MOVES 3060
 
 typedef struct {
-    int Accept;                 /* always allow this many moves.
-                                   0 means don't use this level,
-                                   since at least 1 is needed when used. */
-    int Extra;                  /* and add up to this many more */
-    float Threshold;            /* if they are within this equity difference */
+    int Accept;      /* always allow this many moves.
+                        0 means don't use this level,
+                        since at least 1 is needed when used. */
+    int Extra;       /* and add up to this many more */
+    float Threshold; /* if they are within this equity difference */
 } movefilter;
 
 /* we'll have filters for 1..4 ply evaluation */
-#define MAX_FILTER_PLIES	4
+#define MAX_FILTER_PLIES 4
 extern movefilter defaultFilters[MAX_FILTER_PLIES][MAX_FILTER_PLIES];
 
 typedef struct {
     /* FIXME expand this... e.g. different settings for different position
      * classes */
-    unsigned int fCubeful:1;    /* cubeful evaluation */
-    unsigned int nPlies:4;
-    unsigned int fUsePrune:1;
-    unsigned int fDeterministic:1;
-    unsigned int :25;		/* padding */
-    float rNoise;               /* standard deviation */
+    unsigned int fCubeful : 1; /* cubeful evaluation */
+    unsigned int nPlies : 4;
+    unsigned int fUsePrune : 1;
+    unsigned int fDeterministic : 1;
+    unsigned int : 25; /* padding */
+    float rNoise;      /* standard deviation */
 } evalcontext;
 
-/* identifies the format of evaluation info in .sgf files
- * early (pre extending rollouts) had no version numbers
- * extendable rollouts have a version number of 1
- * with pruning nets, we have two possibilities - reduction could still
- * be enabled (version = 2) or, given the speedup and performance
- * improvements, I assume we will drop reduction entirely. (ver = 3 or more)
- * When presented with an .sgf file, gnubg will attempt to work out what
- * data is present in the file based on the version number
- */
-
-#define SGF_FORMAT_VER 3
-
 typedef struct {
-    evalcontext aecCube[2], aecChequer[2];      /* evaluation parameters */
-    evalcontext aecCubeLate[2], aecChequerLate[2];      /* ... for later moves */
-    evalcontext aecCubeTrunc, aecChequerTrunc;  /* ... at truncation point */
+    evalcontext aecCube[2], aecChequer[2];         /* evaluation parameters */
+    evalcontext aecCubeLate[2], aecChequerLate[2]; /* ... for later moves */
+    evalcontext aecCubeTrunc, aecChequerTrunc;     /* ... at truncation point */
     movefilter aaamfChequer[2][MAX_FILTER_PLIES][MAX_FILTER_PLIES];
     movefilter aaamfLate[2][MAX_FILTER_PLIES][MAX_FILTER_PLIES];
 
-    unsigned int fCubeful:1;    /* Cubeful rollout */
-    unsigned int fVarRedn:1;    /* variance reduction */
-    unsigned int fInitial:1;    /* roll out as opening position */
-    unsigned int fRotate:1;     /* quasi-random dice */
-    unsigned int fTruncBearoff2:1;      /* cubeless rollout: trunc at BEAROFF2 */
-    unsigned int fTruncBearoffOS:1;     /* cubeless rollout: trunc at BEAROFF_OS */
-    unsigned int fLateEvals:1;  /* enable different evals for later moves */
-    unsigned int fDoTruncate:1; /* enable truncated rollouts */
-    unsigned int fStopOnSTD:1;  /* stop when std's are small enough */
-    unsigned int fStopOnJsd:1;
-    unsigned int fStopMoveOnJsd:1;      /* stop multi-line rollout when jsd
-                                         * is small enough */
-    unsigned short nTruncate;   /* truncation */
-    unsigned int nTrials;       /* number of rollouts */
-    unsigned short nLate;       /* switch evaluations on move nLate of game */
+    unsigned int fCubeful : 1;        /* Cubeful rollout */
+    unsigned int fVarRedn : 1;        /* variance reduction */
+    unsigned int fInitial : 1;        /* roll out as opening position */
+    unsigned int fRotate : 1;         /* quasi-random dice */
+    unsigned int fTruncBearoff2 : 1;  /* cubeless rollout: trunc at BEAROFF2 */
+    unsigned int fTruncBearoffOS : 1; /* cubeless rollout: trunc at BEAROFF_OS */
+    unsigned int fLateEvals : 1;      /* enable different evals for later moves */
+    unsigned int fDoTruncate : 1;     /* enable truncated rollouts */
+    unsigned int fStopOnSTD : 1;      /* stop when std's are small enough */
+    unsigned int fStopOnJsd : 1;
+    unsigned int fStopMoveOnJsd : 1; /* stop multi-line rollout when jsd
+                                      * is small enough */
+    unsigned short nTruncate;        /* truncation */
+    unsigned int nTrials;            /* number of rollouts */
+    unsigned short nLate;            /* switch evaluations on move nLate of game */
     rng rngRollout;
     unsigned long nSeed;
     unsigned int nMinimumGames; /* always do at least this many */
@@ -146,7 +134,9 @@ typedef struct {
 } jsdinfo;
 
 typedef enum {
-    EVAL_NONE, EVAL_EVAL, EVAL_ROLLOUT
+    EVAL_NONE,
+    EVAL_EVAL,
+    EVAL_ROLLOUT
 } evaltype;
 
 /* enumeration of variations of backgammon
@@ -155,8 +145,6 @@ typedef enum {
 extern bgvariation bgvDefault;
 
 extern int anChequers[NUM_VARIATIONS];
-extern const char *aszVariations[NUM_VARIATIONS];
-extern const char *aszVariationCommands[NUM_VARIATIONS];
 
 /*
  * Cubeinfo contains the information necessary for evaluation
@@ -203,9 +191,9 @@ typedef enum {
     TOOGOODRE_TAKE,
     TOOGOODRE_PASS,
     NO_REDOUBLE_BEAVER,
-    NODOUBLE_DEADCUBE,          /* cube is dead (match play only) */
-    NO_REDOUBLE_DEADCUBE,       /* cube is dead (match play only) */
-    NOT_AVAILABLE,              /* Cube not available */
+    NODOUBLE_DEADCUBE,    /* cube is dead (match play only) */
+    NO_REDOUBLE_DEADCUBE, /* cube is dead (match play only) */
+    NOT_AVAILABLE,        /* Cube not available */
     OPTIONAL_DOUBLE_TAKE,
     OPTIONAL_REDOUBLE_TAKE,
     OPTIONAL_DOUBLE_BEAVER,
@@ -236,16 +224,16 @@ extern const char *aszDoubleTypes[NUM_DOUBLE_TYPES];
  * prefined settings
  */
 
-#define NUM_SETTINGS            9
-#define SETTINGS_4PLY           8
-#define SETTINGS_GRANDMASTER    7
-#define SETTINGS_SUPREMO        6
-#define SETTINGS_WORLDCLASS     5
-#define SETTINGS_EXPERT         4
-#define SETTINGS_ADVANCED       3
-#define SETTINGS_INTERMEDIATE   2
-#define SETTINGS_NOVICE         1
-#define SETTINGS_BEGINNER       0
+#define NUM_SETTINGS 9
+#define SETTINGS_4PLY 8
+#define SETTINGS_GRANDMASTER 7
+#define SETTINGS_SUPREMO 6
+#define SETTINGS_WORLDCLASS 5
+#define SETTINGS_EXPERT 4
+#define SETTINGS_ADVANCED 3
+#define SETTINGS_INTERMEDIATE 2
+#define SETTINGS_NOVICE 1
+#define SETTINGS_BEGINNER 0
 
 extern evalcontext aecSettings[NUM_SETTINGS];
 extern evalcontext ecBasic;
@@ -277,7 +265,7 @@ typedef struct {
 
 extern int fInterrupt;
 extern cubeinfo ciCubeless;
-extern const char *aszEvalType[(int) EVAL_ROLLOUT + 1];
+extern const char *aszEvalType[(int)EVAL_ROLLOUT + 1];
 
 extern bearoffcontext *pbc1;
 extern bearoffcontext *pbc2;
@@ -286,7 +274,7 @@ extern bearoffcontext *pbcTS;
 extern bearoffcontext *apbcHyper[3];
 
 typedef struct {
-    unsigned int cMoves;        /* and current move when building list */
+    unsigned int cMoves; /* and current move when building list */
     unsigned int cMaxMoves, cMaxPips;
     int iMoveBest;
     float rBestScore;
@@ -306,25 +294,25 @@ extern float rContactX[2];
 /* position classes */
 
 typedef enum {
-    CLASS_OVER = 0,             /* Game already finished */
-    CLASS_HYPERGAMMON1,         /* hypergammon with 1 chequers */
-    CLASS_HYPERGAMMON2,         /* hypergammon with 2 chequers */
-    CLASS_HYPERGAMMON3,         /* hypergammon with 3 chequers */
-    CLASS_BEAROFF2,             /* Two-sided bearoff database (in memory) */
-    CLASS_BEAROFF_TS,           /* Two-sided bearoff database (on disk) */
-    CLASS_BEAROFF1,             /* One-sided bearoff database (in memory) */
-    CLASS_BEAROFF_OS,           /* One-sided bearoff database /on disk) */
-    CLASS_RACE,                 /* Race neural network */
-    CLASS_CRASHED,              /* Contact, one side has less than 7 active checkers */
-    CLASS_CONTACT               /* Contact neural network */
+    CLASS_OVER = 0,     /* Game already finished */
+    CLASS_HYPERGAMMON1, /* hypergammon with 1 chequers */
+    CLASS_HYPERGAMMON2, /* hypergammon with 2 chequers */
+    CLASS_HYPERGAMMON3, /* hypergammon with 3 chequers */
+    CLASS_BEAROFF2,     /* Two-sided bearoff database (in memory) */
+    CLASS_BEAROFF_TS,   /* Two-sided bearoff database (on disk) */
+    CLASS_BEAROFF1,     /* One-sided bearoff database (in memory) */
+    CLASS_BEAROFF_OS,   /* One-sided bearoff database /on disk) */
+    CLASS_RACE,         /* Race neural network */
+    CLASS_CRASHED,      /* Contact, one side has less than 7 active checkers */
+    CLASS_CONTACT       /* Contact neural network */
 } positionclass;
 
 #define N_CLASSES (CLASS_CONTACT + 1)
 
 #define CLASS_PERFECT CLASS_BEAROFF_TS
-#define CLASS_GOOD CLASS_BEAROFF_OS   /* Good enough to not need SanityCheck */
+#define CLASS_GOOD CLASS_BEAROFF_OS /* Good enough to not need SanityCheck */
 
-typedef int (*classevalfunc) (const TanBoard anBoard, float arOutput[], const bgvariation bgv, NNState * nnStates);
+typedef int (*classevalfunc)(const TanBoard anBoard, float arOutput[], const bgvariation bgv, NNState *nnStates);
 
 extern classevalfunc acef[N_CLASSES];
 
@@ -332,16 +320,13 @@ extern classevalfunc acef[N_CLASSES];
 #define CACHE_SIZE_DEFAULT 19
 #define CACHE_SIZE_GUIMAX 23
 
-#define CFMONEY(arEquity,pci) \
-   ( ( (pci)->fCubeOwner == -1 ) ? arEquity[ 2 ] : \
-   ( ( (pci)->fCubeOwner == (pci)->fMove ) ? arEquity[ 1 ] : arEquity[ 3 ] ) )
+#define CFMONEY(arEquity, pci) \
+    (((pci)->fCubeOwner == -1) ? arEquity[2] : (((pci)->fCubeOwner == (pci)->fMove) ? arEquity[1] : arEquity[3]))
 
-#define CFHYPER(arEquity,pci) \
-   ( ( (pci)->fCubeOwner == -1 ) ? \
-     ( ( (pci)->fJacoby ) ? arEquity[ 2 ] : arEquity[ 1 ] ) : \
-     ( ( (pci)->fCubeOwner == (pci)->fMove ) ? arEquity[ 0 ] : arEquity[ 3 ] ) )
+#define CFHYPER(arEquity, pci) \
+    (((pci)->fCubeOwner == -1) ? (((pci)->fJacoby) ? arEquity[2] : arEquity[1]) : (((pci)->fCubeOwner == (pci)->fMove) ? arEquity[0] : arEquity[3]))
 
-extern void EvalInitialise(char *szWeights, char *szWeightsBinary, int fNoBearoff, void (*pfProgress) (unsigned int));
+extern void EvalInitialise(char *szWeights, char *szWeightsBinary, int fNoBearoff, void (*pfProgress)(unsigned int));
 
 extern int EvalShutdown(void);
 
@@ -351,46 +336,45 @@ extern int EvalNewWeights(int nSize);
 
 extern int EvalSave(const char *szWeights);
 
-
-EXP_LOCK_FUN(int, EvaluatePosition, NNState * nnStates, const TanBoard anBoard, float arOutput[],
-             cubeinfo * const pci, const evalcontext * pec);
+extern int
+EvaluatePosition(NNState *nnStates, const TanBoard anBoard, float arOutput[], cubeinfo *const pci, const evalcontext *pec);
 
 extern void
- InvertEvaluationR(float ar[NUM_ROLLOUT_OUTPUTS], const cubeinfo * pci);
+InvertEvaluationR(float ar[NUM_ROLLOUT_OUTPUTS], const cubeinfo *pci);
 
 extern void
- InvertEvaluation(float ar[NUM_OUTPUTS]);
-
-EXP_LOCK_FUN(int, FindBestMove, int anMove[8], int nDice0, int nDice1,
-             TanBoard anBoard, const cubeinfo * pci, evalcontext * pec, movefilter aamf[MAX_FILTER_PLIES][MAX_FILTER_PLIES]);
-
-EXP_LOCK_FUN(int, FindnSaveBestMoves, movelist * pml,
-             int nDice0, int nDice1, const TanBoard anBoard,
-             positionkey * keyMove, const float rThr,
-             const cubeinfo * pci, const evalcontext * pec, movefilter aamf[MAX_FILTER_PLIES][MAX_FILTER_PLIES]);
-
-extern void
- PipCount(const TanBoard anBoard, unsigned int anPips[2]);
+InvertEvaluation(float ar[NUM_OUTPUTS]);
 
 extern int
- ThorpCount(const TanBoard anBoard, int *pnLeader, float *adjusted, int *pnTrailer);
+FindBestMove(int anMove[8], int nDice0, int nDice1, TanBoard anBoard,
+             const cubeinfo *pci, evalcontext *pec, movefilter aamf[MAX_FILTER_PLIES][MAX_FILTER_PLIES]);
 
 extern int
- KeithCount(const TanBoard anBoard, int pn[2]);
+FindnSaveBestMoves(movelist *pml, int nDice0, int nDice1, const TanBoard anBoard,
+                   positionkey *keyMove, const float rThr, const cubeinfo *pci, const evalcontext *pec,
+                   movefilter aamf[MAX_FILTER_PLIES][MAX_FILTER_PLIES]);
+
+extern void PipCount(const TanBoard anBoard, unsigned int anPips[2]);
 
 extern int
- IsightCount(const TanBoard anBoard, int pn[2]);
+ThorpCount(const TanBoard anBoard, int *pnLeader, float *adjusted, int *pnTrailer);
 
 extern int
- DumpPosition(const TanBoard anBoard, char *szOutput,
-             const evalcontext * pec, cubeinfo * pci, int fOutputMWC,
+KeithCount(const TanBoard anBoard, int pn[2]);
+
+extern int
+IsightCount(const TanBoard anBoard, int pn[2]);
+
+extern int
+DumpPosition(const TanBoard anBoard, char *szOutput,
+             const evalcontext *pec, cubeinfo *pci, int fOutputMWC,
              int fOutputWinPC, int fOutputInvert, const char *szMatchID);
 
 extern void
- SwapSides(TanBoard anBoard);
+SwapSides(TanBoard anBoard);
 
 extern int
- GameStatus(const TanBoard anBoard, const bgvariation bgv);
+GameStatus(const TanBoard anBoard, const bgvariation bgv);
 
 extern void EvalCacheFlush(void);
 extern int EvalCacheResize(unsigned int cNew);
@@ -405,7 +389,7 @@ extern evalCache cpEval;
 extern unsigned int cCache;
 
 extern int
- GenerateMoves(movelist * pml, const TanBoard anBoard, int n0, int n1, int fPartial);
+GenerateMoves(movelist *pml, const TanBoard anBoard, int n0, int n1, int fPartial);
 
 extern int ApplySubMove(TanBoard anBoard, const int iSrc, const int nRoll, const int fCheckLegal);
 
@@ -417,129 +401,131 @@ extern positionclass ClassifyPosition(const TanBoard anBoard, const bgvariation 
 extern void EvalRaceBG(const TanBoard anBoard, float arOutput[], const bgvariation bgv);
 
 extern float
- Utility(float ar[NUM_OUTPUTS], const cubeinfo * pci);
+Utility(float ar[NUM_OUTPUTS], const cubeinfo *pci);
 
 extern float
- UtilityME(float ar[NUM_OUTPUTS], const cubeinfo * pci);
+UtilityME(float ar[NUM_OUTPUTS], const cubeinfo *pci);
 
 extern int
- SetCubeInfoMoney(cubeinfo * pci, const int nCube, const int fCubeOwner,
+SetCubeInfoMoney(cubeinfo *pci, const int nCube, const int fCubeOwner,
                  const int fMove, const int fJacoby, const int fBeavers, const bgvariation bgv);
 
 extern int
- SetCubeInfo(cubeinfo * pci, const int nCube, const int fCubeOwner,
+SetCubeInfo(cubeinfo *pci, const int nCube, const int fCubeOwner,
             const int fMove, const int nMatchTo, const int anScore[2],
             const int fCrawford, const int fJacoby, const int fBeavers, const bgvariation bgv);
 
 extern void
- swap_us(unsigned int *p0, unsigned int *p1);
+swap_us(unsigned int *p0, unsigned int *p1);
 
 extern void
- swap(int *p0, int *p1);
+swap(int *p0, int *p1);
 
 extern void
- SanityCheck(const TanBoard anBoard, float arOutput[]);
+SanityCheck(const TanBoard anBoard, float arOutput[]);
 
 extern int
- EvalOver(const TanBoard anBoard, float arOutput[], const bgvariation bgv, NNState * nnStates);
+EvalOver(const TanBoard anBoard, float arOutput[], const bgvariation bgv, NNState *nnStates);
 
 extern float
- KleinmanCount(int nPipOnRoll, int nPipNotOnRoll);
+KleinmanCount(int nPipOnRoll, int nPipNotOnRoll);
 
 extern int
- GetDPEq(int *pfCube, float *prDPEq, const cubeinfo * pci);
+GetDPEq(int *pfCube, float *prDPEq, const cubeinfo *pci);
 
 extern float
- mwc2eq(const float rMwc, const cubeinfo * pci);
+mwc2eq(const float rMwc, const cubeinfo *pci);
 
 extern float
- eq2mwc(const float rEq, const cubeinfo * pci);
+eq2mwc(const float rEq, const cubeinfo *pci);
 
 extern float
- se_mwc2eq(const float rMwc, const cubeinfo * pci);
+se_mwc2eq(const float rMwc, const cubeinfo *pci);
 
 extern float
- se_eq2mwc(const float rEq, const cubeinfo * pci);
+se_eq2mwc(const float rEq, const cubeinfo *pci);
 
-extern char
-*FormatEval(char *sz, evalsetup * pes);
+extern char *FormatEval(char *sz, evalsetup *pes);
 
-extern cubedecision FindCubeDecision(float arDouble[], float aarOutput[][NUM_ROLLOUT_OUTPUTS], const cubeinfo * pci);
-
-EXP_LOCK_FUN(int, GeneralCubeDecisionE, float aarOutput[2][NUM_ROLLOUT_OUTPUTS],
-             const TanBoard anBoard, cubeinfo * const pci, const evalcontext * pec, const evalsetup * pes);
-
-EXP_LOCK_FUN(int, GeneralEvaluationE, float arOutput[NUM_ROLLOUT_OUTPUTS],
-             const TanBoard anBoard, cubeinfo * const pci, const evalcontext * pec);
+extern cubedecision FindCubeDecision(float arDouble[], float aarOutput[][NUM_ROLLOUT_OUTPUTS], const cubeinfo *pci);
 
 extern int
- cmp_evalsetup(const evalsetup * pes1, const evalsetup * pes2);
+GeneralCubeDecisionE(float aarOutput[2][NUM_ROLLOUT_OUTPUTS],
+                     const TanBoard anBoard,
+                     cubeinfo *const pci, const evalcontext *pec, const evalsetup *UNUSED(pes));
 
 extern int
- cmp_evalcontext(const evalcontext * pec1, const evalcontext * pec2);
+GeneralEvaluationE(float arOutput[NUM_ROLLOUT_OUTPUTS],
+                   const TanBoard anBoard, cubeinfo *const pci, const evalcontext *pec);
 
-extern char
-*GetCubeRecommendation(const cubedecision cd);
+extern int
+cmp_evalsetup(const evalsetup *pes1, const evalsetup *pes2);
+
+extern int
+cmp_evalcontext(const evalcontext *pec1, const evalcontext *pec2);
+
+extern char *GetCubeRecommendation(const cubedecision cd);
 
 extern cubedecision
-FindBestCubeDecision(float arDouble[], float aarOutput[2][NUM_ROLLOUT_OUTPUTS], const cubeinfo * pci);
+FindBestCubeDecision(float arDouble[], float aarOutput[2][NUM_ROLLOUT_OUTPUTS], const cubeinfo *pci);
 
 extern int
- getCurrentGammonRates(float aarRates[2][2],
-                      float arOutput[], const TanBoard anBoard, cubeinfo * pci, const evalcontext * pec);
+getCurrentGammonRates(float aarRates[2][2],
+                      float arOutput[], const TanBoard anBoard, cubeinfo *pci, const evalcontext *pec);
 
 extern void
- getMoneyPoints(float aaarPoints[2][7][2], const int fJacoby, const int fBeavers, float aarRates[2][2]);
+getMoneyPoints(float aaarPoints[2][7][2], const int fJacoby, const int fBeavers, float aarRates[2][2]);
 
 extern void
- getMatchPoints(float aaarPoints[2][4][2],
-               int afAutoRedouble[2], int afDead[2], const cubeinfo * pci, float aarRates[2][2]);
+getMatchPoints(float aaarPoints[2][4][2],
+               int afAutoRedouble[2], int afDead[2], const cubeinfo *pci, float aarRates[2][2]);
 
 extern void
- getCubeDecisionOrdering(int aiOrder[3],
-                        float arDouble[4], float aarOutput[2][NUM_ROLLOUT_OUTPUTS], const cubeinfo * pci);
+getCubeDecisionOrdering(int aiOrder[3],
+                        float arDouble[4], float aarOutput[2][NUM_ROLLOUT_OUTPUTS], const cubeinfo *pci);
 
 extern float
- getPercent(const cubedecision cd, const float arDouble[]);
+getPercent(const cubedecision cd, const float arDouble[]);
 
 extern void
- RefreshMoveList(movelist * pml, int *ai);
+RefreshMoveList(movelist *pml, int *ai);
 
-EXP_LOCK_FUN(int, ScoreMove, NNState * nnStates, move * pm, const cubeinfo * pci, const evalcontext * pec, int nPlies);
+extern int
+ScoreMove(NNState *nnStates, move *pm, const cubeinfo *pci, const evalcontext *pec, int nPlies);
 
 extern void
- CopyMoveList(movelist * pmlDest, const movelist * pmlSrc);
+CopyMoveList(movelist *pmlDest, const movelist *pmlSrc);
 
 extern int
- isCloseCubedecision(const float arDouble[]);
+isCloseCubedecision(const float arDouble[]);
 
 extern int
- isMissedDouble(float arDouble[], float aarOutput[2][NUM_ROLLOUT_OUTPUTS], const int fDouble, const cubeinfo * pci);
+isMissedDouble(float arDouble[], float aarOutput[2][NUM_ROLLOUT_OUTPUTS], const int fDouble, const cubeinfo *pci);
 
 extern unsigned int
- locateMove(const TanBoard anBoard, const int anMove[8], const movelist * pml);
+locateMove(const TanBoard anBoard, const int anMove[8], const movelist *pml);
 
 extern int
- equal_movefilter(const int i, const movefilter amf1[MAX_FILTER_PLIES], const movefilter amf2[MAX_FILTER_PLIES]);
+equal_movefilter(const int i, const movefilter amf1[MAX_FILTER_PLIES], const movefilter amf2[MAX_FILTER_PLIES]);
 
 extern int
- equal_movefilters(movefilter aamf1[MAX_FILTER_PLIES][MAX_FILTER_PLIES],
-                   movefilter aamf2[MAX_FILTER_PLIES][MAX_FILTER_PLIES]);
+equal_movefilters(movefilter aamf1[MAX_FILTER_PLIES][MAX_FILTER_PLIES],
+                  movefilter aamf2[MAX_FILTER_PLIES][MAX_FILTER_PLIES]);
 
 extern doubletype DoubleType(const int fDoubled, const int fMove, const int fTurn);
 
 extern int
- PerfectCubeful(bearoffcontext * pbc, const TanBoard anBoard, float arEquity[]);
+PerfectCubeful(bearoffcontext *pbc, const TanBoard anBoard, float arEquity[]);
 
 extern void
- baseInputs(const TanBoard anBoard, float arInput[]);
+baseInputs(const TanBoard anBoard, float arInput[]);
 
-extern int CompareMoves(const move * pm0, const move * pm1);
+extern int CompareMoves(const move *pm0, const move *pm1);
 extern float EvalEfficiency(const TanBoard anBoard, positionclass pc, int ply);
-extern float Cl2CfMoney(float arOutput[NUM_OUTPUTS], cubeinfo * pci, float rCubeX);
-extern float Cl2CfMatch(float arOutput[NUM_OUTPUTS], cubeinfo * pci, float rCubeX);
-extern float Noise(const evalcontext * pec, const TanBoard anBoard, int iOutput);
-extern int EvalKey(const evalcontext * pec, const int nPlies, const cubeinfo * pci, int fCubefulEquity);
+extern float Cl2CfMoney(float arOutput[NUM_OUTPUTS], cubeinfo *pci, float rCubeX);
+extern float Cl2CfMatch(float arOutput[NUM_OUTPUTS], cubeinfo *pci, float rCubeX);
+extern float Noise(const evalcontext *pec, const TanBoard anBoard, int iOutput);
+extern int EvalKey(const evalcontext *pec, const int nPlies, const cubeinfo *pci, int fCubefulEquity);
 extern void MakeCubePos(const cubeinfo aciCubePos[], const int cci, const int fTop, cubeinfo aci[], const int fInvert);
 extern void GetECF3(float arCubeful[], int cci, float arCf[], cubeinfo aci[]);
 extern int EvaluatePerfectCubeful(const TanBoard anBoard, float arEquity[], const bgvariation bgv);
