@@ -114,6 +114,23 @@
             markdown.push();
             markdown.push('Best cube action: ' + actions[best].toLocaleLowerCase() +
                 (best == 0 ? (data.equity[1] < data.equity[2] ? ', take' : ', pass') : ''));
+
+            const p = (i) => {
+                const e = i == 5 ? 1 - data.wc[0] : data.wc[i];
+                return (e * 100).toFixed(1) + '&nbsp;&nbsp;&nbsp;';
+            }
+
+            markdown.push('<br>');
+            markdown.push('Cubeless equity: ' + data.ce.toFixed(3));
+            markdown.push('<br>');
+            markdown.push('');
+
+            const mr = '&nbsp;&nbsp;&nbsp;&nbsp;';
+            markdown.push(`|  | W${mr} | WG${mr} | WB${mr} | L${mr} | LG${mr} | LB${mr} |`);
+            markdown.push('| --- | --- | --- | --- | --- | --- | --- |');
+            markdown.push(`| Winning chances:&nbsp;&nbsp; | ${p(0)} | ${p(1)} | ${p(2)} |${p(5)} | ${p(3)} | ${p(4)} |`);
+
+            console.log(res.data);
         }
 
         function renderPlayAction(markdown, res) {
