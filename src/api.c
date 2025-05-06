@@ -66,12 +66,20 @@ void appendCubeDecisionData(StringBuffer *jb, const char *action, const PlayerAc
 {
     appendAction(jb, action);
     sbAppend(jb, ", \"data\": {");
-    sbAppendf(jb, "\"cd\": %d,", ppadc->cd);
-    sbAppendf(jb, "\"equity\": [%.4f, %.4f, %.4f, %.4f]}",
+    sbAppendf(jb, "\"cd\": %d,", ppadc->cd); // Cube decision
+    sbAppendf(jb, "\"equity\": [%.4f, %.4f, %.4f, %.4f],",
               ppadc->arEquity[OUTPUT_NODOUBLE],
               ppadc->arEquity[OUTPUT_TAKE],
               ppadc->arEquity[OUTPUT_DROP],
               ppadc->arEquity[OUTPUT_OPTIMAL]);
+    sbAppendf(jb, "\"wc\": [%.4f, %.4f, %.4f, %.4f, %.4f],", // Winning chances
+              ppadc->aarOutput[0][OUTPUT_WIN],
+              ppadc->aarOutput[0][OUTPUT_WINGAMMON],
+              ppadc->aarOutput[0][OUTPUT_WINBACKGAMMON],
+              ppadc->aarOutput[0][OUTPUT_LOSEGAMMON],
+              ppadc->aarOutput[0][OUTPUT_LOSEBACKGAMMON]);
+    sbAppendf(jb, "\"ce\": %.4f", ppadc->aarOutput[0][OUTPUT_EQUITY]); // Cubeless equity
+    sbAppend(jb, "}");
 }
 
 const char *hint(const char *xgid, int nPlies)
@@ -127,7 +135,7 @@ const char *hint(const char *xgid, int nPlies)
             char szMove[FORMATEDMOVESIZE];
             FormatMovePlain(szMove, matchState.anBoard, pm->anMove);
             int len = strlen(szMove);
-            if(len > 0 && szMove[len-1] == ' ') szMove[len-1] = 0;
+            if (len > 0 && szMove[len - 1] == ' ') szMove[len - 1] = 0;
 
             sbAppendf(&jb, "\"move\": \"%s\",", szMove);
             sbAppendf(&jb, "\"equity\": [%.4f, %.4f],", pm->rEquity, pm->rCubelessEquity);

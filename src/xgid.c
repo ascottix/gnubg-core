@@ -270,9 +270,8 @@ int findBestMoves(movelist *pml, const matchstate *pms, int nPlies)
     return res;
 }
 
-int findCubeDecision(cubedecision *pcd, float arEquity[NUM_CUBEFUL_OUTPUTS], const matchstate *pms, int nPlies)
+int findCubeDecision(cubedecision *pcd, float arEquity[NUM_CUBEFUL_OUTPUTS], float aarOutput[2][NUM_ROLLOUT_OUTPUTS], const matchstate *pms, int nPlies)
 {
-    float aarOutput[2][NUM_ROLLOUT_OUTPUTS];
     float aarStdDev[2][NUM_ROLLOUT_OUTPUTS];
     rolloutstat aarsStatistics[2][2];
     cubeinfo ci;
@@ -345,44 +344,6 @@ int findCubeDecision(cubedecision *pcd, float arEquity[NUM_CUBEFUL_OUTPUTS], con
     return 0;
 }
 
-void print_matchstate(const matchstate *ms) {
-    printf("matchstate {\n");
-
-    printf("  anBoard = [\n");
-    for (int i = 0; i < 2; ++i) {
-        printf("    [");
-        for (int j = 0; j < 25; ++j) {
-            printf("%u", ms->anBoard[i][j]);
-            if (j < 24) printf(", ");
-        }
-        printf("]");
-        if (i == 0) printf(",\n");
-        else printf("\n");
-    }
-    printf("  ]\n");
-
-    printf("  anDice = [%u, %u]\n", ms->anDice[0], ms->anDice[1]);
-    printf("  fTurn = %d\n", ms->fTurn);
-    printf("  fResigned = %d\n", ms->fResigned);
-    printf("  fResignationDeclined = %d\n", ms->fResignationDeclined);
-    printf("  fDoubled = %d\n", ms->fDoubled);
-    printf("  cGames = %d\n", ms->cGames);
-    printf("  fMove = %d\n", ms->fMove);
-    printf("  fCubeOwner = %d\n", ms->fCubeOwner);
-    printf("  fCrawford = %d\n", ms->fCrawford);
-    printf("  fPostCrawford = %d\n", ms->fPostCrawford);
-    printf("  nMatchTo = %d\n", ms->nMatchTo);
-    printf("  anScore = [%d, %d]\n", ms->anScore[0], ms->anScore[1]);
-    printf("  nCube = %d\n", ms->nCube);
-    printf("  cBeavers = %u\n", ms->cBeavers);
-    printf("  bgv = %d\n", (int)(intptr_t)ms->bgv);
-    printf("  fCubeUse = %d\n", ms->fCubeUse);
-    printf("  fJacoby = %d\n", ms->fJacoby);
-    printf("  gs = %d\n", (int)(intptr_t)ms->gs);
-
-    printf("}\n");
-}
-
 int findBestAction(PlayerActionInfo *ppai, const char *xgid, int nPlies)
 {
     matchstate ms;
@@ -399,7 +360,7 @@ int findBestAction(PlayerActionInfo *ppai, const char *xgid, int nPlies)
         ppai->action = ActionRejectResignation;
     } else if (ms.anDice[0] == 0) {
         // No dice, either the opponent has doubled or we must decide whether to double or roll
-        res = findCubeDecision(&ppai->data.cube.cd, ppai->data.cube.arEquity, &ms, nPlies);
+        res = findCubeDecision(&ppai->data.cube.cd, ppai->data.cube.arEquity, ppai->data.cube.aarOutput, &ms, nPlies);
 
         if (res < 0) {
             printf("findCubeDecision() error: %d\n", res);

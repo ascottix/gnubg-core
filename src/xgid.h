@@ -44,6 +44,7 @@ typedef struct {
 typedef struct {
     cubedecision cd;
     float arEquity[NUM_CUBEFUL_OUTPUTS];
+    float aarOutput[2][NUM_ROLLOUT_OUTPUTS];
 } PlayerActionDataCube;
 
 typedef struct {
@@ -65,7 +66,7 @@ extern int getCubeInfoFromMatchStateWithBeavers(cubeinfo *pci, const matchstate 
 extern int evaluatePosition(const matchstate *pms, int nPlies);
 extern int evaluatePositionXgid(const char *xgid, int nPlies);
 extern int findBestMoves(movelist *pml, const matchstate *pms, int nPlies);
-extern int findCubeDecision(cubedecision *pcd, float arEquity[NUM_CUBEFUL_OUTPUTS], const matchstate *pms, int nPlies);
+extern int findCubeDecision(cubedecision *pcd, float arEquity[NUM_CUBEFUL_OUTPUTS], float aarOutput[2][NUM_ROLLOUT_OUTPUTS], const matchstate *pms, int nPlies);
 
 extern PlayerAction getActionFromCubeDecision(cubedecision cd, const matchstate *pms);
 
