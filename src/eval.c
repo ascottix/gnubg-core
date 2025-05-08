@@ -221,20 +221,12 @@ evalCache cEval;
 evalCache cpEval;
 unsigned int cCache;
 int fInterrupt = FALSE;
-int fMatchCancelled = FALSE;
 
 /* variation of backgammon used by gnubg */
 bgvariation bgvDefault = VARIATION_STANDARD;
 
 /* the number of chequers for the variations */
 int anChequers[NUM_VARIATIONS] = {15, 15, 1, 2, 3};
-
-cubeinfo ciCubeless = {1, 0, 0, 0, {0, 0}, FALSE, FALSE, FALSE, {1.0, 1.0, 1.0, 1.0}, VARIATION_STANDARD};
-
-const char *aszEvalType[] = {
-    N_("No evaluation"),
-    N_("Neural net evaluation"),
-    N_("Rollout")};
 
 evalcontext ecBasic = {FALSE, 0, FALSE, TRUE, 0.0};
 
@@ -246,68 +238,6 @@ movefilter defaultFilters[MAX_FILTER_PLIES][MAX_FILTER_PLIES] = MOVEFILTER_NORMA
 
 /* Random context, for generating non-deterministic noisy evaluations. */
 static randctx rc;
-
-/*
- * predefined settings
- */
-
-const char *aszSettings[NUM_SETTINGS] = {
-    N_("setting|beginner"),
-    N_("setting|casual play"),
-    N_("setting|intermediate"),
-    N_("setting|advanced"),
-    N_("setting|expert"),
-    N_("setting|world class"),
-    N_("setting|supremo"),
-    N_("setting|grandmaster"),
-    N_("setting|4ply")};
-
-/* which evaluation context does the predefined settings use */
-evalcontext aecSettings[NUM_SETTINGS] = {
-    {TRUE, 0, FALSE, TRUE, 0.060f}, /* beginner */
-    {TRUE, 0, FALSE, TRUE, 0.050f}, /* casual player */
-    {TRUE, 0, FALSE, TRUE, 0.040f}, /* intermediate */
-    {TRUE, 0, FALSE, TRUE, 0.015f}, /* advanced */
-    {TRUE, 0, FALSE, TRUE, 0.0f},   /* expert */
-    {TRUE, 2, TRUE, TRUE, 0.0f},    /* world class */
-    {TRUE, 2, TRUE, TRUE, 0.0f},    /* supremo */
-    {TRUE, 3, TRUE, TRUE, 0.0f},    /* grand master */
-    {TRUE, 4, TRUE, TRUE, 0.0f},    /* 4ply */
-};
-
-/* which move filter does the predefined settings use */
-int aiSettingsMoveFilter[NUM_SETTINGS] = {
-    -1, /* beginner: n/a */
-    -1, /* casual play: n/a */
-    -1, /* intermediate: n/a */
-    -1, /* advanced: n/a */
-    -1, /* expert: n/a */
-    2,  /* wc: normal */
-    3,  /* supremo: large */
-    3,  /* grandmaster: large */
-    3,  /* 4ply: large */
-};
-
-/* the predefined move filters */
-
-const char *aszMoveFilterSettings[NUM_MOVEFILTER_SETTINGS] = {
-    N_("Tiny"),
-    N_("Narrow"),
-    N_("Normal"),
-    N_("Large"),
-    N_("Huge")};
-
-movefilter aaamfMoveFilterSettings[NUM_MOVEFILTER_SETTINGS][MAX_FILTER_PLIES][MAX_FILTER_PLIES] = {
-    MOVEFILTER_TINY,
-    MOVEFILTER_NARROW,
-    MOVEFILTER_NORMAL,
-    MOVEFILTER_LARGE,
-    MOVEFILTER_HUGE};
-
-const char *aszDoubleTypes[NUM_DOUBLE_TYPES] = {
-    N_("doubletype|Double"),
-    N_("doubletype|Beaver"),
-    N_("doubletype|Raccoon")};
 
 /* parameters for EvalEfficiency */
 
@@ -322,11 +252,6 @@ float rContactX[2] = {0.68f, 0.76f};
 
 static inline int
 msb32(int n)
-#ifdef HAVE___BUILTIN_CLZ
-{
-    return 31 - __builtin_clz(n); /* or __builtin_clz() ^ 31 */
-}
-#else
 /* from rosettacode.org */
 {
     int b = 0;
@@ -340,7 +265,6 @@ msb32(int n)
 #undef step
     return b;
 }
-#endif
 
 static void
 ComputeTable0(void)
@@ -436,16 +360,13 @@ DestroyWeights(void)
 extern int
 EvalShutdown(void)
 {
-
-    int i;
-
     /* close bearoff databases */
 
     BearoffClose(pbc1);
     BearoffClose(pbc2);
     BearoffClose(pbcOS);
     BearoffClose(pbcTS);
-    for (i = 0; i < 3; ++i)
+    for (int i = 0; i < 3; ++i)
         BearoffClose(apbcHyper[i]);
 
     /* destroy neural nets */

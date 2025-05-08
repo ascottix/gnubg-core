@@ -204,8 +204,7 @@ typedef enum {
 typedef enum {
     DT_NORMAL,
     DT_BEAVER,
-    DT_RACCOON,
-    NUM_DOUBLE_TYPES
+    DT_RACCOON
 } doubletype;
 
 /*
@@ -218,32 +217,7 @@ typedef enum {
     TT_BEAVER
 } taketype;
 
-extern const char *aszDoubleTypes[NUM_DOUBLE_TYPES];
-
-/*
- * prefined settings
- */
-
-#define NUM_SETTINGS 9
-#define SETTINGS_4PLY 8
-#define SETTINGS_GRANDMASTER 7
-#define SETTINGS_SUPREMO 6
-#define SETTINGS_WORLDCLASS 5
-#define SETTINGS_EXPERT 4
-#define SETTINGS_ADVANCED 3
-#define SETTINGS_INTERMEDIATE 2
-#define SETTINGS_NOVICE 1
-#define SETTINGS_BEGINNER 0
-
-extern evalcontext aecSettings[NUM_SETTINGS];
 extern evalcontext ecBasic;
-extern int aiSettingsMoveFilter[NUM_SETTINGS];
-extern const char *aszSettings[NUM_SETTINGS];
-
-#define NUM_MOVEFILTER_SETTINGS 5
-
-extern const char *aszMoveFilterSettings[NUM_MOVEFILTER_SETTINGS];
-extern movefilter aaamfMoveFilterSettings[NUM_MOVEFILTER_SETTINGS][MAX_FILTER_PLIES][MAX_FILTER_PLIES];
 
 typedef enum {
     CMARK_NONE,
@@ -264,8 +238,6 @@ typedef struct {
 } move;
 
 extern int fInterrupt;
-extern cubeinfo ciCubeless;
-extern const char *aszEvalType[(int)EVAL_ROLLOUT + 1];
 
 extern bearoffcontext *pbc1;
 extern bearoffcontext *pbc2;
