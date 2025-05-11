@@ -261,7 +261,7 @@ int findBestMoves(movelist *pml, const matchstate *pms, int nPlies)
     ec.fDeterministic = TRUE;
     ec.rNoise = 0.0f; // No noise
 
-    movefilter aamf[MAX_FILTER_PLIES][MAX_FILTER_PLIES] = MOVEFILTER_NORMAL;
+    movefilter aamf[MAX_FILTER_PLIES][MAX_FILTER_PLIES] = MOVEFILTER_LARGE;
     // MOVEFILTER_TINY, MOVEFILTER_NARROW, MOVEFILTER_NORMAL, MOVEFILTER_LARGE, MOVEFILTER_HUGE
 
     // Search for the best moves
